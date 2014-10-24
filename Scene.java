@@ -36,9 +36,11 @@ public class Scene {
 		My=0;
 		
 		// Triangle size
+		
 		triangleWidth= 0.4*(xRight-xLeft);
         triangleHeight= 0.8*(yTop-yBottom);
         // Triangle initial location
+    
         xTriangle= xLeft + 0.3*(xRight-xLeft);
         yTriangle= yBottom + 0.1*(yTop-yBottom);	
         
@@ -108,11 +110,32 @@ public class Scene {
 		yTriangle += yShift;
 	}
 	
+	public void moveScene(double x, double y){
+		
+		xLeft+= x;
+		xRight+= x;
+		yTop+= y;
+		yBottom+= y;
+		
+	}
+	public void zoomScene(double zoom){
+		//implementar zoom
+		double xcen = (xRight+xLeft)/2;
+		double ycen = (yTop+yBottom)/2;
+		double width = this.getWidth();
+		double height = this.getHeight();
+		width = width*zoom;		
+		height = height*zoom;
+		xLeft= xcen-width/2;
+		xRight= xcen+width/2;
+		yTop= ycen+height/2;
+		yBottom= ycen-height/2;
+	}
 	
 	public void mouseDot(double mouseX, double mouseY){
-		
-		My=mouseX;
-		Mx=mouseY;
+		//las coordenadas del raton van al reves?
+		Mx=xRight-mouseX;
+		My=yTop-mouseY;
 		
 		
 		

@@ -10,6 +10,7 @@ package controller;
 //JOGL imports
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GL2;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
@@ -30,6 +31,8 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	private GLAutoDrawable canvas; // The viewport that is used to render the model
 	
 	private final GLU glu = new GLU(); //This object is kept for invoking gluOrtho2D in update_PROJECTION_MATRIX
+	//private boolean update_Proyection_Matrix=false;
+	
 	
 	public Controller(GLAutoDrawable canvas1){
 		System.out.print("Into Controller's constructor\n\n");
@@ -97,12 +100,36 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()){
-			case KeyEvent.VK_RIGHT: scene.moveTriangle(10,0); break;
-			case KeyEvent.VK_LEFT:  scene.moveTriangle(-10,0); break;
-			case KeyEvent.VK_UP:  scene.moveTriangle(0,10); break;
-			case KeyEvent.VK_DOWN:  scene.moveTriangle(0,-10); break;
-		}
 		
+		//modificar para mover escena en vez de figura
+			case KeyEvent.VK_RIGHT: scene.moveScene(10,0); break;
+			case KeyEvent.VK_LEFT:  scene.moveScene(-10,0); break;
+			case KeyEvent.VK_UP:    scene.moveScene(0,10); break;
+			case KeyEvent.VK_DOWN:  scene.moveScene(0,-10); break;
+			
+			case KeyEvent.VK_MINUS: 
+					scene.zoomScene(0.9);
+					
+				//	update_Proyection_Matrix=true;
+				break;
+			case KeyEvent.VK_PLUS:
+					scene.zoomScene(1.1);
+				break;
+					
+		
+//down scene.zoom(0,9); update_projection_matrix= true; break;
+//up scene.zoom (1,1);
+		
+			
+			  
+			 
+		}
+		  
+		GLContext context=canvas.getGL().getGL2().getContext();
+		  if (!context.isCurrent()) context.makeCurrent();
+		  update_PROJECTION_MATRIX(canvas);
+		context.release();
+		  
 		canvas.display();
 	}
 
@@ -161,7 +188,9 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	//////////////////////////////////
 	// Specific methods for this class
 	public void move(double xShift,double yShift){
-		scene.moveTriangle(xShift,yShift);
+		
+		scene.moveScene(xShift,yShift);
+		
 		canvas.display();
 	}
 	
