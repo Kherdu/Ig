@@ -88,10 +88,13 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-
+		
 		double viewPortRatio= (double)width/(double)height;		
 		scene.resize(viewPortRatio);
+		scene.windowSize(height, width);
 		update_PROJECTION_MATRIX(drawable);
+		
+		
 	}
 		
 

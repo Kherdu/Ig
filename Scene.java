@@ -8,6 +8,8 @@
 package model;
 
 //JOGL imports
+import java.awt.Canvas;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -22,6 +24,7 @@ public class Scene {
 	private double triangleWidth, triangleHeight;
 	private boolean redColor;
 	private double Mx,My;
+	private double windowX, windowY ;
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
@@ -35,6 +38,8 @@ public class Scene {
 		Mx=0;
 		My=0;
 		
+		windowX= xRight-xLeft;
+		windowY= yTop-yBottom;
 		// Triangle size
 		
 		triangleWidth= 0.4*(xRight-xLeft);
@@ -59,23 +64,36 @@ public class Scene {
     /////////////////////////////////
 	public void resize(double viewPortRatio){		
 		double sceneVisibleAreaRatio=(xRight-xLeft)/(yTop-yBottom);
+		double c;
 		
 		if (sceneVisibleAreaRatio>=viewPortRatio){
 			     // Increase SVA height
-			     double newHight= (xRight-xLeft)/viewPortRatio;
-			     double yCenter= (yBottom+yTop)/2.0;
-			     yTop= yCenter + newHight/2.0;
-			     yBottom= yCenter - newHight/2.0;
+			
+			  double newHeight= (xRight-xLeft)/viewPortRatio;
+			     
+			     c=(newHeight-getHeight())/2;
+			     yTop +=c;
+			     yBottom -=c;	     
+			     
 		}
 		else{
 				// Increase SVA width
-				double newWidth= viewPortRatio*(yTop-yBottom);
-				double xCenter= (xLeft+xRight)/2.0;
-				xRight= xCenter + newWidth/2.0;
-				xLeft= xCenter - newWidth/2.0;
+			double newWidth= viewPortRatio*(yTop-yBottom);
+				
+			c=(newWidth-getWidth())/2;
+				xRight+= c;
+				xLeft -= c;		
 		}
+		
 	}
 
+	
+	public void windowSize(int h, int w){
+		
+		windowX=w;
+		windowY=h;
+		
+	}
 	/////////////////////////////////
 	public void draw(GLAutoDrawable drawable){
 		
@@ -84,7 +102,6 @@ public class Scene {
         if(redColor) gl.glColor3f(1.0f,0.0f,0.0f);
         else gl.glColor3f(0.0f,1.0f,0.0f); 
 
-        
         gl.glBegin(GL.GL_LINE_LOOP);
         	gl.glVertex2d( xTriangle, yTriangle );
 	        gl.glVertex2d( xTriangle + triangleWidth, yTriangle );
@@ -122,20 +139,25 @@ public class Scene {
 		//implementar zoom
 		double xcen = (xRight+xLeft)/2;
 		double ycen = (yTop+yBottom)/2;
-		double width = this.getWidth();
-		double height = this.getHeight();
-		width = width*zoom;		
-		height = height*zoom;
-		xLeft= xcen-width/2;
-		xRight= xcen+width/2;
-		yTop= ycen+height/2;
-		yBottom= ycen-height/2;
+		double oldWidth = getWidth();
+		double oldHeight = getHeight();
+		double newWidth = oldWidth*zoom;		
+		double newHeight = oldHeight*zoom;
+		
+		xLeft= xLeft+(oldWidth-newWidth);
+		xRight= xRight-(oldWidth-newWidth);
+		yTop= yTop-(oldHeight-newHeight);
+		yBottom= yBottom+(oldHeight-newHeight);
+		//Mx+=width;
+		//My+=height;
 	}
 	
 	public void mouseDot(double mouseX, double mouseY){
-		//las coordenadas del raton van al reves?
-		Mx=xRight-mouseX;
-		My=yTop-mouseY;
+		
+		//Mx= (getWidth()*mouseX)/500;
+		Mx=xLeft+mouseX*getWidth()/windowX;
+		//Mx=xLeft+mouseX;
+		My=yTop-mouseY*getHeight()/windowY;
 		
 		
 		
