@@ -25,27 +25,34 @@ public class Scene {
 	private boolean redColor;
 	private double Mx,My;
 	private double windowX, windowY ;
+	private double xCenter,yCenter;
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
+		
 		// SVA
 		xLeft= xLeft1;
 		xRight= xRight1;
 		yTop= yTop1;
 		yBottom= yBottom1;
 		
-		//mouse coordinates
-		Mx=0;
-		My=0;
+		//SVA center
+		xCenter=(xRight-xLeft)/2;
+		yCenter=(yTop-yBottom)/2;
 		
+		//mouse coordinates
+		Mx=xCenter;
+		My=yCenter;
+		
+		//window size
 		windowX= xRight-xLeft;
 		windowY= yTop-yBottom;
-		// Triangle size
 		
+		// Triangle size
 		triangleWidth= 0.4*(xRight-xLeft);
         triangleHeight= 0.8*(yTop-yBottom);
+       
         // Triangle initial location
-    
         xTriangle= xLeft + 0.3*(xRight-xLeft);
         yTriangle= yBottom + 0.1*(yTop-yBottom);	
         
@@ -63,6 +70,7 @@ public class Scene {
 	
     /////////////////////////////////
 	public void resize(double viewPortRatio){		
+		
 		double sceneVisibleAreaRatio=(xRight-xLeft)/(yTop-yBottom);
 		double c;
 		
@@ -108,11 +116,11 @@ public class Scene {
 	        gl.glVertex2d( xTriangle + triangleWidth/2.0, yTriangle + triangleHeight );
         gl.glEnd();
 
-        gl.glBegin(GL.GL_POINTS);
+        /*gl.glBegin(GL.GL_POINTS);
 			gl.glVertex2d(Mx, My);
 		gl.glEnd();
         	
-    
+         */
        
         
         gl.glFlush();
@@ -137,8 +145,7 @@ public class Scene {
 	}
 	public void zoomScene(double zoom){
 		//implementar zoom
-		double xcen = (xRight+xLeft)/2;
-		double ycen = (yTop+yBottom)/2;
+		
 		double oldWidth = getWidth();
 		double oldHeight = getHeight();
 		double newWidth = oldWidth*zoom;		
@@ -152,6 +159,7 @@ public class Scene {
 		//My+=height;
 	}
 	
+	
 	public void mouseDot(double mouseX, double mouseY){
 		
 		//Mx= (getWidth()*mouseX)/500;
@@ -159,9 +167,25 @@ public class Scene {
 		//Mx=xLeft+mouseX;
 		My=yTop-mouseY*getHeight()/windowY;
 		
+		centerView(Mx,My);
+		/*System.out.println("mx="+Mx +" My"+ My);
+		System.out.println("yTop="+yTop +" yBottom"+ yBottom);
+		System.out.println("xRight="+xRight +" xLeft"+ xLeft);
+		*/
+	}
+	
+	public void centerView(double X, double Y){
+		
+		double xShift=xCenter-X;
+		double yShift=yCenter-Y;
+		moveScene(xShift,yShift);
+		//yBottom= yBottom-getHeight()+Y;
+		
+	
 		
 		
 	}
+	
 	/////////////////////////////////
 	public void changeColor(){
 		redColor = !redColor;

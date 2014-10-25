@@ -158,6 +158,12 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		double posy=e.getY();
 		
 		scene.mouseDot(posx, posy);
+		
+		GLContext context=canvas.getGL().getGL2().getContext();
+		  if (!context.isCurrent()) context.makeCurrent();
+		  update_PROJECTION_MATRIX(canvas);
+		context.release();
+		  
 		canvas.display();	
 		
 		
@@ -192,10 +198,15 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	// Specific methods for this class
 	public void move(double xShift,double yShift){
 		
+		
 		scene.moveScene(xShift,yShift);
 		
 		canvas.display();
 	}
+	
+	
+	
+	
 	
 	private void update_PROJECTION_MATRIX(GLAutoDrawable drawable) {
 		double xLeft= scene.getXLeft();
