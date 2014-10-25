@@ -1,12 +1,31 @@
 package model;
 import java.util.*;
 
-import javax.swing.JList;
 
 public class Copo {
 	
-		private JList<Segmento> _lista;
+	
+		private List<Segmento> lista;
+		
+		
 	public Copo(){
-		new JList<Segmento> _lista;
+		
+		List<Segmento> lista= new ArrayList<Segmento>();
+		
+	}
+	public void addSegmento(Segmento s){
+		
+		lista.add(s);
+		
+	}
+	
+	public List getCopo(){
+		
+		return lista;
+	}
+	
+	public void cambiaPuntos(){
+		
+		lista.add(index, element)
 	}
 }
