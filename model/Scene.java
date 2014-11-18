@@ -92,7 +92,7 @@ public class Scene {
 			double newHeight= (xRight-xLeft)/viewPortRatio;
 			     
 			     c=(newHeight-getHeight())/2;
-			     yTop +=c;
+			     yTop    +=c;
 			     yBottom -=c;	     
 			     
 		}
@@ -129,7 +129,13 @@ public class Scene {
         		gl.glVertex2d(_copo.getdot2(i).get_x(), _copo.getdot2(i).get_y());
         	}
         	
+       
         gl.glEnd();
+        
+        /*gl.glBegin(GL.GL_POINTS);
+    		gl.glVertex2d(Mx,My);
+    	gl.glEnd();
+    	*/
         gl.glFlush();
 	}
 	
@@ -216,7 +222,26 @@ public class Scene {
 		
 	}
 	
-
+	/*public void embaldosar(int nCol){
+		double sceneVisibleAreaRatio=(xRight-xLeft)/(yTop-yBottom);
+		double w=getWidth();
+		double h=w/sceneVisibleAreaRatio;
+		
+		for (int i=0; i<nCol;i++){
+			double currentH=0;
+			while ((currentH+h)<=getHeight()){
+				GLAutoDrawable canvas= new canvas;
+				
+				
+			}
+		}
+		
+	}
+	*/
+	
+	public void desembaldosar(){
+		
+	}	
 	/////////////////////////////////
 	public void changeColor(){
 		redColor = !redColor;

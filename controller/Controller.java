@@ -98,9 +98,10 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		
 		double viewPortRatio= (double)width/(double)height;		
+		
+		
 		scene.windowSize(height, width);
 		scene.resize(viewPortRatio);
-		
 		
 		update_PROJECTION_MATRIX(drawable);
 		
@@ -123,13 +124,14 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_MINUS: scene.zoomScene(1.1);    break;
 			case KeyEvent.VK_SPACE: scene.addNivel();        break;	
 			case KeyEvent.VK_B:     scene.subNivel();        break;
-			case KeyEvent.VK_K:     numCol++;                break;
-		/*	case KeyEvent.VK_L:     if (numCol>0){
-										numCol--; 
-										baldosas=false;
-										} else if(numCol==0)
-											scene.desembaldosar(); break;
-		*/							
+			case KeyEvent.VK_K:     numCol++; 
+									baldosas=true;           break;
+		    case KeyEvent.VK_L:  if (numCol>0){
+									numCol--; 
+									baldosas=false;
+									} else if(numCol==0)
+									scene.desembaldosar();   break;
+									
 										
 //down scene.zoom(0,9); update_projection_matrix= true; break;
 //up scene.zoom (1,1); 
