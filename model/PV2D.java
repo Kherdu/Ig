@@ -1,13 +1,16 @@
 package model;
 
-public class Dot {
+public class PV2D {
 
 	private double _x;
 	private double _y;
+	private boolean _vector;
 	
-	public Dot(double x, double y){
+	
+	public PV2D(double x, double y,boolean vector){
 		this._x=x;
 		this._y=y;
+		this._vector=vector;
 	}
 
 	public double get_x() {
@@ -17,15 +20,14 @@ public class Dot {
 	public double get_y() {
 		return _y;
 	}
-	public void moveDot(double x, double y){
-		_x=x;
-		_y=y;
+	
+	public boolean is_Vector(){
+		return _vector;
 	}
 	
-	public void changeDot(Dot newDot){
+	public void changeDot(PV2D newDot){
 		_x=newDot._x;
 		_y=newDot._y;
 	}
-	
-	
+
 }

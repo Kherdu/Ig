@@ -4,14 +4,14 @@ package model;
 
 public class Lapiz {
 
-	private Dot _pos;
+	private PV2D _pos;
 	private double _dir;
 	
 	/**
 	 * constructor del lapiz
 	 */
 	public Lapiz(){
-		 _pos = new Dot(0,0);
+		 _pos = new PV2D(0,0,false);
 		 _dir=0;
 	}
 	
@@ -20,7 +20,7 @@ public class Lapiz {
 	 * @param punto - el punto donde acaba
 	 * 
 	 */
-	public void moveLapiz(Dot punto){
+	public void moveLapiz(PV2D punto){
 		_pos.changeDot(punto);		
 			
 	}
@@ -55,20 +55,32 @@ public class Lapiz {
 	public void avanzar(double dis){
 		double x = _pos.get_x()+ (dis*Math.cos(Math.toRadians(_dir)));
 		double y = _pos.get_y()+ (dis*Math.sin(Math.toRadians(_dir)));
-		Dot av = new Dot(x,y);
+		PV2D av = new PV2D(x,y,false);
 		_pos.changeDot(av);
 	}
 	
-	
-	public Dot get_pos(){
+	/**
+	 * devuelve la posicion actual del lapiz
+	 * @return - el punto actual
+	 */
+	public PV2D get_pos(){
 		return _pos;
 	}
 	
+	/**
+	 * devuelve el angulo actual del lapiz
+	 * @return - el angulo actual
+	 */
 	public double get_angle(){
 		return _dir;
 	}
 	
-	
+	public Segmento crearSegmento(double avan){
+		PV2D a = new PV2D(_pos.get_x(),_pos.get_y(),false);
+		avanzar(avan);
+		PV2D b = new PV2D(_pos.get_x()-a.get_x(),_pos.get_y()-a.get_y(),true);
+		return new Segmento(a,b);		
+	}
 	
 	
 	
