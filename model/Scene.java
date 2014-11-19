@@ -9,6 +9,7 @@ package model;
 
 //JOGL imports
 import java.awt.Canvas;
+import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -26,7 +27,7 @@ public class Scene {
 	private double Mx,My;
 	private double windowX, windowY ;
 	private double xCenter,yCenter;
-	private Copo _copo;
+	private ArrayList<Poligono> _poligono;
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
@@ -49,26 +50,22 @@ public class Scene {
 		windowX= xRight-xLeft;
 		windowY= yTop-yBottom;
 		
-		// Triangle size
+		_poligono=new ArrayList<Poligono>();
 		triangleWidth= 0.4*(xRight-xLeft);
-        triangleHeight= 0.8*(yTop-yBottom);
-       
-        // Triangle initial location
-        xTriangle= xLeft + 0.3*(xRight-xLeft);
-        yTriangle= yBottom + 0.1*(yTop-yBottom);	
-        
-        redColor= true;
-		_copo = new Copo();
-        Dot p1 = new Dot(xTriangle,yTriangle);
+		xTriangle= xLeft + 0.3*(xRight-xLeft);
+		/*Dot p1 = new Dot(xTriangle,yTriangle);
         Dot p2 = new Dot(xTriangle + triangleWidth,yTriangle);
-        Dot p3 = new Dot(xTriangle + triangleWidth/2.0, yTriangle + triangleHeight);
-        Segmento seg1 = new Segmento(p1,p2);
-        Segmento seg2 = new Segmento(p2,p3);
-        Segmento seg3 = new Segmento(p3,p1);
-        _copo.addSegmento(seg1);
-        _copo.addSegmento(seg2);
-        _copo.addSegmento(seg3);
-        
+        Segmento seg = new Segmento(p1,p2);*/
+		//poligono 1
+		Dot p1= new Dot(xTriangle,yTriangle);
+		Dot p2=new Dot(xCenter,yCenter);
+		redColor= true;
+		
+        //Poligono pol1= new Poligono(p1,300,3);
+        Poligono pol2= new Poligono(p2,65,3);
+        //_poligono.add(pol1);
+        _poligono.add(pol2);
+		
 	     
 	}
 	
@@ -123,15 +120,17 @@ public class Scene {
         if(redColor) gl.glColor3f(1.0f,0.0f,0.0f);
         else gl.glColor3f(0.0f,1.0f,0.0f); 
 
-        gl.glBegin(GL.GL_LINE_LOOP);
-		    gl.glVertex2d(_copo.getdot1(0).get_x(), _copo.getdot1(0).get_y());
-        	for(int i=0;i<_copo.getCopo().size();i++){
-        		gl.glVertex2d(_copo.getdot2(i).get_x(), _copo.getdot2(i).get_y());
-        	}
+       for(int i=0;i<_poligono.size();i++){
+        	
+        	gl.glBegin(GL.GL_LINE_LOOP);
+		    	gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
+		    	for(int j=0;j<_poligono.get(i).getCopo().size();j++){
+		    		gl.glVertex2d(_poligono.get(i).getdot2(j).get_x(), _poligono.get(i).getdot2(j).get_y());
+		    	}
         	
        
-        gl.glEnd();
-        
+		    gl.glEnd();
+        }
         /*gl.glBegin(GL.GL_POINTS);
     		gl.glVertex2d(Mx,My);
     	gl.glEnd();
@@ -139,17 +138,7 @@ public class Scene {
         gl.glFlush();
 	}
 	
-	public void addNivel(){
-		
-		_copo.addFractal();
-		
-	}
 	
-	public void subNivel() {
-		_copo.subFractal();
-		
-		
-	}
 	
 	
 	/////////////////////////////////
@@ -222,26 +211,7 @@ public class Scene {
 		
 	}
 	
-	/*public void embaldosar(int nCol){
-		double sceneVisibleAreaRatio=(xRight-xLeft)/(yTop-yBottom);
-		double w=getWidth();
-		double h=w/sceneVisibleAreaRatio;
-		
-		for (int i=0; i<nCol;i++){
-			double currentH=0;
-			while ((currentH+h)<=getHeight()){
-				GLAutoDrawable canvas= new canvas;
-				
-				
-			}
-		}
-		
-	}
-	*/
 	
-	public void desembaldosar(){
-		
-	}	
 	/////////////////////////////////
 	public void changeColor(){
 		redColor = !redColor;

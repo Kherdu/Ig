@@ -22,7 +22,7 @@ public class Dot {
 		_y=y;
 	}
 	
-	public void chageDot(Dot newDot){
+	public void changeDot(Dot newDot){
 		_x=newDot._x;
 		_y=newDot._y;
 	}

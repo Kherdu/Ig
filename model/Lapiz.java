@@ -21,7 +21,7 @@ public class Lapiz {
 	 * 
 	 */
 	public void moveLapiz(Dot punto){
-		_pos.chageDot(punto);		
+		_pos.changeDot(punto);		
 			
 	}
 	
@@ -56,7 +56,7 @@ public class Lapiz {
 		double x = _pos.get_x()+ (dis*Math.cos(Math.toRadians(_dir)));
 		double y = _pos.get_y()+ (dis*Math.sin(Math.toRadians(_dir)));
 		Dot av = new Dot(x,y);
-		_pos.chageDot(av);
+		_pos.changeDot(av);
 	}
 	
 	

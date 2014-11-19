@@ -32,8 +32,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	
 	private final GLU glu = new GLU(); //This object is kept for invoking gluOrtho2D in update_PROJECTION_MATRIX
 	//private boolean update_Proyection_Matrix=false;
-	private boolean baldosas=false;
-	private int numCol=0;
+	
 	
 	public Controller(GLAutoDrawable canvas1){
 		System.out.print("Into Controller's constructor\n\n");
@@ -122,15 +121,9 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_DOWN:  scene.moveScene(0,-10);  break;
 			case KeyEvent.VK_PLUS:  scene.zoomScene(0.9);    break;
 			case KeyEvent.VK_MINUS: scene.zoomScene(1.1);    break;
-			case KeyEvent.VK_SPACE: scene.addNivel();        break;	
-			case KeyEvent.VK_B:     scene.subNivel();        break;
-			case KeyEvent.VK_K:     numCol++; 
-									baldosas=true;           break;
-		    case KeyEvent.VK_L:  if (numCol>0){
-									numCol--; 
-									baldosas=false;
-									} else if(numCol==0)
-									scene.desembaldosar();   break;
+			
+			
+		  
 									
 										
 //down scene.zoom(0,9); update_projection_matrix= true; break;

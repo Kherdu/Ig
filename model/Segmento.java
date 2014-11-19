@@ -105,51 +105,29 @@ public class Segmento {
 	 * 
 	 * @param aux - la lista donde se guarda los nuevos segmentos
 	 */
-	public void fractalseg(ArrayList<Segmento> aux, Lapiz lap){
+	public Segmento newSegmento(int lados, Lapiz lap){
 	
-		//los 5 puntos que habra al final, los dos que tenemos mas los tres finales
-		//a y e son los puntos ariginales
 		Dot a,e;
-		Segmento x,y,z,w;
+		Segmento x;
 		
-		a=get_dot1();
-		e=get_dot2();
+		
+		a=new Dot(get_dot2().get_x(),get_dot2().get_y());
 		
 		
 		//inizializa el lapiz
 		lap.moveLapiz(get_dot1());
-		double r=getAngulo();
-		
-		
-		
+		double r=getAngulo();		
 		lap.girarlapiz(r);
-		//lap.girarx(180);
-		double dis=getSize()/3;
+		lap.avanzar(getSize());
 		
-		//calcula el primer nuevo punto
-		lap.avanzar(dis);
-		Dot b= new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
-		//crea un segmento nuevo y lo añade al nuevo copo
-		x=new Segmento(a,b);
-		aux.add(x);
-				
-		//calcula el segundo punto
-		lap.girarx(-60);
-		lap.avanzar(dis);
-		Dot c= new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
-		//crea un nuevo segmento unido por el anterior y lo añade al copo
-		y=new Segmento(b,c);
-		aux.add(y);
+		r=180-(360/lados);
+		lap.girarx(r);
+		lap.avanzar(getSize());
+		e=new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
+		x= new Segmento(a,e);
 		
-		//calcula el 3º punto
-		lap.girarx(120);
-		lap.avanzar(dis);
-		Dot d= new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
-		//crea y añade los dos ultimos segmentos. de modo que el ultimo termine donde termina el segmento ariginal
-		z=new Segmento(c,d);
-		aux.add(z);
-		w=new Segmento(d,e);
-		aux.add(w);	
+		return x;
+		
 		
 	}
 }
