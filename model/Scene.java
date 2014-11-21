@@ -8,7 +8,7 @@
 package model;
 
 //JOGL imports
-import java.awt.Canvas;
+
 import java.util.ArrayList;
 
 import javax.media.opengl.GL;
@@ -61,7 +61,7 @@ public class Scene {
 		PV2D p2=new PV2D(xCenter,yCenter,false);
 		redColor= true;
 		
-        Poligono pol1= new Poligono(p1,300,3);
+        Poligono pol1= new Poligono(p1,100,6);
         Poligono pol2= new Poligono(p2,65,3);
         _poligono.add(pol1);
         _poligono.add(pol2);
@@ -120,11 +120,11 @@ public class Scene {
         if(redColor) gl.glColor3f(1.0f,0.0f,0.0f);
         else gl.glColor3f(0.0f,1.0f,0.0f); 
 
-       for(int i=0;i<_poligono.size()-1;i++){
+       for(int i=0;i<_poligono.size();i++){
         	
         	gl.glBegin(GL.GL_LINE_LOOP);
 		    	//gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
-		    	for(int j=0;j<_poligono.get(i).getPoligono().size();j++){
+		    	for(int j=0;j<_poligono.get(i).getPoligonoSize();j++){
 		    		gl.glVertex2d(_poligono.get(i).getdot(j).get_x(), _poligono.get(i).getdot(j).get_y());
 		    	}
         	

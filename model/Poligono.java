@@ -6,7 +6,6 @@ public class Poligono {
 	
 	
 		private ArrayList<Segmento> _lista;
-		private int lados;
 		
 		
 	/**
@@ -17,9 +16,8 @@ public class Poligono {
 	 */
 	public Poligono(PV2D c, double r, int l ){
 		
-		lados=l;
 		_lista= new ArrayList<Segmento>();		
-		initPoligono(c,r,lados);
+		initPoligono(c,r,l);
 		
 	}
 	
@@ -50,12 +48,12 @@ public class Poligono {
 	}
 	
 	/**
-	 * metodo que devuelve el arraylist de segmentos
+	 * metodo que devuelve el tamaño del arraylist de segmentos
 	 * @return - el arrayList de segmentos
 	 */
-	public ArrayList<Segmento> getPoligono(){
+	public int getPoligonoSize(){
 		
-		return _lista;
+		return _lista.size();
 	}
 	
 	/**

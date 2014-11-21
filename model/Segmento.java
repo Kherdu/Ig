@@ -1,7 +1,5 @@
 package model;
 
-import java.util.ArrayList;
-
 
 
 public class Segmento {
@@ -10,19 +8,27 @@ public class Segmento {
 	private PV2D _vector;
 	
 	/**
-	 * constructor
-	 * @param a
-	 * @param b
+	 * constructor por defecto
+	 * @param a - punto principal del segmento
+	 * @param b - el vector normal asociado al vector
 	 */
 	public Segmento(PV2D a,PV2D b){
 		this._dot=a;
 		this._vector=b;
 	}
 
+	/**
+	 * devuelve el vertice principal del segmento
+	 * @return - el punto del segmento
+	 */
 	public PV2D get_dot() {
 		return _dot;
 	}
 
+	/**
+	 * devuelve el vector normal asociado al segmento
+	 * @return - el vector asociado
+	 */
 	public PV2D get_vector() {
 		return _vector;
 	}
@@ -33,10 +39,7 @@ public class Segmento {
 	 * @return - la longitud del segmento
 	 */
 	public double getSize(){
-		
-		double r = Math.hypot(_vector.get_x(), _vector.get_y());
-		
-		return r;
+		return Math.hypot(_vector.get_x(), _vector.get_y());
 	}
 	
 	/**

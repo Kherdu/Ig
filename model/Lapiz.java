@@ -8,7 +8,7 @@ public class Lapiz {
 	private double _dir;
 	
 	/**
-	 * constructor del lapiz
+	 * constructor del lapiz, empezando en el eje de cordenadas y con angulo 0
 	 */
 	public Lapiz(){
 		 _pos = new PV2D(0,0,false);
@@ -27,16 +27,14 @@ public class Lapiz {
 	
 	/**
 	 * metodo para girar el lapiz sin moverlo de donde esta
-	 * @param angulo el nuevo angulo(pueden ser valores mayores/menores a +- 360, se escala)
+	 * @param angulo - el nuevo angulo(pueden ser valores mayores/menores a +- 360, se escala)
 	 */
 	public void girarlapiz(double angulo){
-		//angulo=Math.toDegrees(angulo);
-		if ((angulo<=360)&&(angulo>=-360)){
-			_dir=angulo;
-		}else {
-			_dir=(angulo%360);
-		}
+		
+		_dir=(angulo%360);
+		
 	}
+	
 	
 	/**
 	 * gira en x grados a la izquierda o derecha
@@ -48,6 +46,7 @@ public class Lapiz {
 			_dir=(_dir%360);
 	}
 	
+	
 	/**
 	 * avanza una distancia x, segun la direccion que mire
 	 * @param dis - la distancia que recorre
@@ -58,6 +57,7 @@ public class Lapiz {
 		PV2D av = new PV2D(x,y,false);
 		_pos.changeDot(av);
 	}
+	
 	
 	/**
 	 * devuelve la posicion actual del lapiz
@@ -75,6 +75,11 @@ public class Lapiz {
 		return _dir;
 	}
 	
+	/**
+	 * metodo que crea un nuevo segmento desde el punto actual hasta el punto donde avanza
+	 * @param avan - la distancia que va avanzar el lapiz para determinar el extremo final del segmento
+	 * @return el segmento determinado por el punto de inicio del lapiz y la posicion actual del lapiz
+	 */
 	public Segmento crearSegmento(double avan){
 		PV2D a = new PV2D(_pos.get_x(),_pos.get_y(),false);
 		avanzar(avan);
