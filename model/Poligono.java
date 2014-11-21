@@ -7,19 +7,19 @@ public class Poligono {
 	
 		private ArrayList<Segmento> _lista;
 		private int lados;
+		
+		
 	/**
-	 * 	
-	 * @param c centro
-	 * @param r radio
-	 * @param l lado
+	 * 	constructor de Poligonos
+	 * @param c - centro de la circunferencia circunscrita
+	 * @param r - radio de la circunferencia circunscrita
+	 * @param l - lado numero de lados
 	 */
-	public Poligono(Dot c, double r, int l ){
+	public Poligono(PV2D c, double r, int l ){
 		
 		lados=l;
-		_lista= new ArrayList<Segmento>();
-		
-		
-		initPoligono(c,r,l);
+		_lista= new ArrayList<Segmento>();		
+		initPoligono(c,r,lados);
 		
 	}
 	
@@ -32,30 +32,39 @@ public class Poligono {
 	}
 	
 	/**
-	 * metodo que devuelve el primer punto de un segmento
+	 * metodo que devuelve el vector del segmento
 	 * @param i - la posicion del segmento
-	 * @return el primer punto del segmento pedido
+	 * @return el vector del segmento pedido
 	 */
-	public Dot getdot1 (int i){
-		return _lista.get(i).get_dot1();
+	public PV2D getVector (int i){
+		return _lista.get(i).get_vector();
 	}
 	
 	/**
-	 * metodo que devuelve el segundo punto de un segmento
+	 * metodo que devuelve el punto de un segmento
 	 * @param i - la posicion del segmento
-	 * @return el segundo punto del segmento pedido
+	 * @return el punto del segmento pedido
 	 */
-	public Dot getdot2 (int i){
-		return _lista.get(i).get_dot2();
+	public PV2D getdot (int i){
+		return _lista.get(i).get_dot();
 	}
 	
-	public ArrayList<Segmento> getCopo(){
+	/**
+	 * metodo que devuelve el arraylist de segmentos
+	 * @return - el arrayList de segmentos
+	 */
+	public ArrayList<Segmento> getPoligono(){
 		
 		return _lista;
 	}
 	
-	
-	private void initPoligono( Dot c, double r, int l){
+	/**
+	 * metodo auxiliar que crea el poligono a partir de una circunferencia
+	 * @param c - el centro de la circunferencia que circuscribe la figura
+	 * @param r - el radio de la circunferencia
+	 * @param l - el numero de lados
+	 */
+	private void initPoligono( PV2D c, double r, int l){
 		
 		double alfa= (2*Math.PI)/l; //angulo alfa
 		double gamma= (Math.PI-alfa)/2;
@@ -65,16 +74,13 @@ public class Poligono {
 		
 		
 		
-		Lapiz lap= new Lapiz();		
+		Lapiz lap= new Lapiz();
 		lap.moveLapiz(c);
 		lap.avanzar(r);
 		lap.girarx(180-gamma);
 		
 		for (int i=0;i<l;i++){
-			Dot p1 = new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
-			lap.avanzar(dis);
-			Dot p2 = new Dot(lap.get_pos().get_x(),lap.get_pos().get_y());
-			Segmento s=new Segmento(p1,p2);
+			Segmento s= lap.crearSegmento(dis);
 			_lista.add(s);
 			lap.girarx(alfa);
 		}

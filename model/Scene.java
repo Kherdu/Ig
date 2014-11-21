@@ -57,13 +57,13 @@ public class Scene {
         Dot p2 = new Dot(xTriangle + triangleWidth,yTriangle);
         Segmento seg = new Segmento(p1,p2);*/
 		//poligono 1
-		Dot p1= new Dot(xTriangle,yTriangle);
-		Dot p2=new Dot(xCenter,yCenter);
+		PV2D p1= new PV2D(xTriangle,yTriangle,false);
+		PV2D p2=new PV2D(xCenter,yCenter,false);
 		redColor= true;
 		
-        //Poligono pol1= new Poligono(p1,300,3);
+        Poligono pol1= new Poligono(p1,300,3);
         Poligono pol2= new Poligono(p2,65,3);
-        //_poligono.add(pol1);
+        _poligono.add(pol1);
         _poligono.add(pol2);
 		
 	     
@@ -120,12 +120,12 @@ public class Scene {
         if(redColor) gl.glColor3f(1.0f,0.0f,0.0f);
         else gl.glColor3f(0.0f,1.0f,0.0f); 
 
-       for(int i=0;i<_poligono.size();i++){
+       for(int i=0;i<_poligono.size()-1;i++){
         	
         	gl.glBegin(GL.GL_LINE_LOOP);
-		    	gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
-		    	for(int j=0;j<_poligono.get(i).getCopo().size();j++){
-		    		gl.glVertex2d(_poligono.get(i).getdot2(j).get_x(), _poligono.get(i).getdot2(j).get_y());
+		    	//gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
+		    	for(int j=0;j<_poligono.get(i).getPoligono().size();j++){
+		    		gl.glVertex2d(_poligono.get(i).getdot(j).get_x(), _poligono.get(i).getdot(j).get_y());
 		    	}
         	
        
