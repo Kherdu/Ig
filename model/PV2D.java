@@ -60,5 +60,14 @@ public class PV2D {
 		_x=newDot.get_x();
 		_y=newDot.get_y();
 	}
+	
+	/**
+	 * metodo para normalizar un vector.(darle modulo 1)
+	 */
+	public void normalizarVector(){
+		double aux_x= _x/(Math.hypot(_x, _y));
+		_y = _y/(Math.hypot(_x,_y));
+		_x=aux_x;
+	}
 
 }
