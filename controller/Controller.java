@@ -121,6 +121,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_DOWN:  scene.moveScene(0,-10);  break;
 			case KeyEvent.VK_PLUS:  scene.zoomScene(0.9);    break;
 			case KeyEvent.VK_MINUS: scene.zoomScene(1.1);    break;
+			case KeyEvent.VK_S:		scene.selecion();		 break;
 			
 			
 		  

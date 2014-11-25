@@ -28,6 +28,8 @@ public class Scene {
 	private double windowX, windowY ;
 	private double xCenter,yCenter;
 	private ArrayList<Poligono> _poligono;
+	private boolean _selec;
+	private int _polSelecionado;//indica la posiccion del poligono selecionado en el array de poligonos, -1 en caso de no haber ninguno selecionado
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
@@ -49,6 +51,10 @@ public class Scene {
 		//window size
 		windowX= xRight-xLeft;
 		windowY= yTop-yBottom;
+		
+		_selec=false;
+		_polSelecionado = -1;
+		
 		
 		_poligono=new ArrayList<Poligono>();
 		triangleWidth= 0.4*(xRight-xLeft);
@@ -116,12 +122,11 @@ public class Scene {
 	public void draw(GLAutoDrawable drawable){
 		
 		GL2 gl = drawable.getGL().getGL2();
-        
-        if(redColor) gl.glColor3f(1.0f,0.0f,0.0f);
-        else gl.glColor3f(0.0f,1.0f,0.0f); 
+         
 
        for(int i=0;i<_poligono.size();i++){
-        	
+    	   if(i!=_polSelecionado) gl.glColor3f(1.0f, 0.0f , 0.0f);
+           else gl.glColor3f(0.0f,0.0f,1.0f); 
         	gl.glBegin(GL.GL_LINE_LOOP);
 		    	//gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
 		    	for(int j=0;j<_poligono.get(i).getPoligonoSize();j++){
@@ -174,17 +179,23 @@ public class Scene {
 	
 	
 	public void mouseDot(double mouseX, double mouseY){
-		
-		//Mx= (getWidth()*mouseX)/500;
+	
 		Mx=xLeft+mouseX*getWidth()/windowX;
-		//Mx=xLeft+mouseX;
 		My=yTop-mouseY*getHeight()/windowY;
+		if(_selec){
+			int i = 0;
+			_polSelecionado = -1;
+			while(i<_poligono.size() && _polSelecionado==-1){
+				if(_poligono.get(i).puntointerno(Mx,My)){
+					_polSelecionado=i;
+				}
+				
+				i++;
+			}
+		}
+		else
+			centerView(Mx,My);
 		
-		centerView(Mx,My);
-		/*System.out.println("mx="+Mx +" My"+ My);
-		System.out.println("yTop="+yTop +" yBottom"+ yBottom);
-		System.out.println("xRight="+xRight +" xLeft"+ xLeft);
-		*/
 	}
 	
 	public void centerView(double X, double Y){
@@ -215,6 +226,14 @@ public class Scene {
 	/////////////////////////////////
 	public void changeColor(){
 		redColor = !redColor;
+	}
+
+	public void selecion() {
+		if (_selec)
+			_selec = false;
+		else
+			_selec = true;
+		
 	}
 
 	
