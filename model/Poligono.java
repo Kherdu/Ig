@@ -39,7 +39,7 @@ public class Poligono {
 	}
 	
 	/**
-	 * metodo que devuelve el tama�o del arraylist de segmentos
+	 * metodo que devuelve el tamaño del arraylist de segmentos
 	 * @return - el arrayList de segmentos
 	 */
 	public int getPoligonoSize(){
@@ -66,7 +66,7 @@ public class Poligono {
 		//calculo de las constantes pertinentes para la construccion del poligono 
 		double alfa= (2*Math.PI)/l;     // angulo usado durante el giro del lapiz
 		double gamma= (Math.PI-alfa)/2; // el angulo externo con respecto al radio
-		double dis=r*Math.cos(gamma)*2; // el tama�o del triangulo
+		double dis=r*Math.cos(gamma)*2; // el tamaño del triangulo
 		gamma=Math.toDegrees(gamma);    // conversion a grados
 		alfa=Math.toDegrees(alfa);
 		
@@ -136,7 +136,44 @@ public class Poligono {
 	}
 	
 	
+	
+	
+	public boolean cyrusBeck(Segmento seg, double tIn, double tOut){
+		tIn= 0; tOut= 1; //ࡾ es un segmento
+		int i= 0; 
+		boolean encontrado= false;
+		double tHit;
+		while(!encontrado && i<_lista.length){
+			//Calcular el corte de R contra la arista extendida {Pi,ni}
+			PV2D aux = new PV2D(seg.get_dot().get_x()-_lista[i].get_dot().get_x(),seg.get_dot().get_y()-_lista[i].get_dot().get_y(),true);
+			double numerador= -1*(aux.get_x()*_Normales[i].get_x()+aux.get_y()*_Normales[i].get_y());
+			double denominador = seg.get_vector().get_x()*_Normales[i].get_x()+seg.get_vector().get_y()*_Normales[i].get_y();
+			
+			if(parlFueraOrCoin(numerador,denominador)) 
+				encontrado= true;
+			else if( !parlDentro(numerador,denominador) ){ //Intersección usual
+				tHit= numerador/denominador;
+				if( !true )
+					tIn= Math.max(tIn,tHit);
+				else if( true ) 
+					tOut= Math.min(tOut, tHit);
+				encontrado= tIn>tOut;
+			}//else if //Intersección usual
+			i++;
+		}//while
+		return !encontrado;
+	}
+	
 
+	private boolean parlFueraOrCoin(double num,double den){
+		return ((den==0) && (-num>=0));
+	}
+	
+	private boolean parlDentro(double num,double den){
+		return ((den==0) && (-num<0));
+	}
+	
+	
 		
 }
 	

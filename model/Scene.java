@@ -28,7 +28,11 @@ public class Scene {
 	private double windowX, windowY ;
 	private double xCenter,yCenter;
 	private ArrayList<Poligono> _poligono;
-	private boolean _selec;
+	private Segmento _seg;
+	private PV2D _dSeg;
+	private PV2D _vSeg;
+	private boolean _flip;
+	private int _selec;
 	private int _polSelecionado;//indica la posiccion del poligono selecionado en el array de poligonos, -1 en caso de no haber ninguno selecionado
 	
 	/////////////////////////////////
@@ -52,9 +56,9 @@ public class Scene {
 		windowX= xRight-xLeft;
 		windowY= yTop-yBottom;
 		
-		_selec=false;
+		_flip=true;
+		_selec=0;
 		_polSelecionado = -1;
-		
 		
 		_poligono=new ArrayList<Poligono>();
 		triangleWidth= 0.4*(xRight-xLeft);
@@ -64,9 +68,10 @@ public class Scene {
         Segmento seg = new Segmento(p1,p2);*/
 		//poligono 1
 		PV2D p1= new PV2D(xTriangle,yTriangle,false);
-		PV2D p2=new PV2D(xCenter,yCenter,false);
+		PV2D p2= new PV2D(xCenter,yCenter,false);
 		redColor= true;
 		
+
         Poligono pol1= new Poligono(p1,100,6);
         Poligono pol2= new Poligono(p2,65,3);
         _poligono.add(pol1);
@@ -136,6 +141,12 @@ public class Scene {
        
 		    gl.glEnd();
         }
+       if(_seg!=null){
+       gl.glBegin(GL.GL_LINE_STRIP);
+       		gl.glVertex2d(_seg.get_dot().get_x(),_seg.get_dot().get_y());
+       		gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
+       gl.glEnd();
+       }
         /*gl.glBegin(GL.GL_POINTS);
     		gl.glVertex2d(Mx,My);
     	gl.glEnd();
@@ -178,11 +189,19 @@ public class Scene {
 	}
 	
 	
+	/**
+	 * metodo encargado de los calculos con los clicks del raton
+	 * @param mouseX - la cordenada x del click del raton
+	 * @param mouseY - la cordenada y del click del raton
+	 */
 	public void mouseDot(double mouseX, double mouseY){
 	
 		Mx=xLeft+mouseX*getWidth()/windowX;
 		My=yTop-mouseY*getHeight()/windowY;
-		if(_selec){
+		if (_selec==0){ // centrar
+			centerView(Mx,My);
+		}
+		else if(_selec==1){ //seleccionar
 			int i = 0;
 			_polSelecionado = -1;
 			while(i<_poligono.size() && _polSelecionado==-1){
@@ -193,11 +212,23 @@ public class Scene {
 				i++;
 			}
 		}
-		else
-			centerView(Mx,My);
-		
+		else if (_selec==2){ // pintar segmento
+			
+			if(_flip){
+				_dSeg=new PV2D(Mx,My,false);
+				_flip=false;
+			}else{
+				
+				_vSeg=new PV2D(Mx-_dSeg.get_x(),My-_dSeg.get_y(),true);
+				_seg = new Segmento(_dSeg,_vSeg);
+				_flip=true;
+			}
+			
+		}
 	}
 	
+	
+
 	public void centerView(double X, double Y){
 		
 		double a = getWidth()/2;
@@ -228,11 +259,8 @@ public class Scene {
 		redColor = !redColor;
 	}
 
-	public void selecion() {
-		if (_selec)
-			_selec = false;
-		else
-			_selec = true;
+	public void seleccion(int sel) {
+		_selec=sel;
 		
 	}
 

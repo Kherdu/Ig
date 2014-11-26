@@ -107,4 +107,10 @@ public class Segmento {
 		
 		
 	}
+	
+	
+	
+	
+	
+	
 }
