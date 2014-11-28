@@ -147,6 +147,30 @@ public class Scene {
        		gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
        gl.glEnd();
        }
+       
+       if(_polSelecionado!=-1 && _seg!=null){
+    	   for (int i = 0;i<this._poligono.size();i++){
+    		   class Type{
+    			   double dou;
+    			   public Type(double d){
+    				   dou=d;
+    			   }
+    			   public double getdou(){
+    				   return dou;
+    			   }
+    		   }
+    		   Type tIn = new Type(0);
+    		   Type tOut = new Type(1);
+    		   if(_poligono.get(i).cyrusBeck(_seg, tIn.getdou(), tOut.getdou())){
+    			   gl.glBegin(GL.GL_POINTS);
+    			   		if(tIn.dou>0)
+    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tIn.dou),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tIn.dou));
+    			   		if(tOut.dou<1)
+    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tOut.dou),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tOut.dou));
+    			   gl.glEnd();
+    		   }
+    	   }
+       }
         /*gl.glBegin(GL.GL_POINTS);
     		gl.glVertex2d(Mx,My);
     	gl.glEnd();

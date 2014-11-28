@@ -139,7 +139,6 @@ public class Poligono {
 	
 	
 	public boolean cyrusBeck(Segmento seg, double tIn, double tOut){
-		tIn= 0; tOut= 1; //ࡾ es un segmento
 		int i= 0; 
 		boolean encontrado= false;
 		double tHit;
@@ -153,14 +152,15 @@ public class Poligono {
 				encontrado= true;
 			else if( !parlDentro(numerador,denominador) ){ //Intersección usual
 				tHit= numerador/denominador;
-				if( !true )
+				double ang=angulo(_Normales[i],seg.get_vector());
+				if( ang<90 && ang>-90 )//thit es de entrada
 					tIn= Math.max(tIn,tHit);
-				else if( true ) 
+				else if( ang>90 || ang<-90 )//thit es de salida 
 					tOut= Math.min(tOut, tHit);
 				encontrado= tIn>tOut;
-			}//else if //Intersección usual
+			}
 			i++;
-		}//while
+		}
 		return !encontrado;
 	}
 	
