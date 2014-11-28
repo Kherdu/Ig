@@ -138,10 +138,12 @@ public class Poligono {
 	
 	
 	
-	public boolean cyrusBeck(Segmento seg, double tIn, double tOut){
+	public boolean cyrusBeck(Segmento seg, Params tparams){
 		int i= 0; 
 		boolean encontrado= false;
 		double tHit;
+		double tIn=0;
+		double tOut=1;
 		while(!encontrado && i<_lista.length){
 			//Calcular el corte de R contra la arista extendida {Pi,ni}
 			PV2D aux = new PV2D(seg.get_dot().get_x()-_lista[i].get_dot().get_x(),seg.get_dot().get_y()-_lista[i].get_dot().get_y(),true);
@@ -161,6 +163,8 @@ public class Poligono {
 			}
 			i++;
 		}
+		tparams.setIn(tIn);
+		tparams.setOut(tOut);
 		return !encontrado;
 	}
 	

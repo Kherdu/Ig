@@ -35,6 +35,7 @@ public class Scene {
 	private int _selec;
 	private int _polSelecionado;//indica la posiccion del poligono selecionado en el array de poligonos, -1 en caso de no haber ninguno selecionado
 	
+	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
 		
@@ -143,6 +144,7 @@ public class Scene {
         }
        if(_seg!=null){
        gl.glBegin(GL.GL_LINE_STRIP);
+       		gl.glColor3f(0.0f,1.0f,0.0f);
        		gl.glVertex2d(_seg.get_dot().get_x(),_seg.get_dot().get_y());
        		gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
        gl.glEnd();
@@ -150,23 +152,16 @@ public class Scene {
        
        if(_polSelecionado!=-1 && _seg!=null){
     	   for (int i = 0;i<this._poligono.size();i++){
-    		   class Type{
-    			   double dou;
-    			   public Type(double d){
-    				   dou=d;
-    			   }
-    			   public double getdou(){
-    				   return dou;
-    			   }
-    		   }
-    		   Type tIn = new Type(0);
-    		   Type tOut = new Type(1);
-    		   if(_poligono.get(i).cyrusBeck(_seg, tIn.getdou(), tOut.getdou())){
+    		  
+    		   Params tParams = new Params(0,1);
+    		   
+    		   if(_poligono.get(i).cyrusBeck(_seg, tParams) && this._polSelecionado==i){
     			   gl.glBegin(GL.GL_POINTS);
-    			   		if(tIn.dou>0)
-    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tIn.dou),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tIn.dou));
-    			   		if(tOut.dou<1)
-    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tOut.dou),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tOut.dou));
+    			   		gl.glColor3f(1.0f,0.0f,1.0f);
+    			   		if(tParams.getin()>0)
+    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getin()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getin()));
+    			   		if(tParams.getout()<1)
+    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getout()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getout()));
     			   gl.glEnd();
     		   }
     	   }
