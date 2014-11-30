@@ -15,6 +15,8 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 
+import com.jogamp.opengl.util.Animator;
+
 public class Scene {
 
 	// Scene Visible Area (SVA)
@@ -70,13 +72,16 @@ public class Scene {
 		//poligono 1
 		PV2D p1= new PV2D(xTriangle,yTriangle,false);
 		PV2D p2= new PV2D(xCenter,yCenter,false);
+		PV2D p3= new PV2D(xCenter-(windowX/4),yCenter+(windowY/4),false);
 		redColor= true;
 		
-
+		
         Poligono pol1= new Poligono(p1,100,6);
         Poligono pol2= new Poligono(p2,65,3);
+        Poligono pol3= new Poligono(p3,50,4);
         _poligono.add(pol1);
         _poligono.add(pol2);
+        _poligono.add(pol3);
 		
 	     
 	}
@@ -147,7 +152,33 @@ public class Scene {
        		gl.glColor3f(0.0f,1.0f,0.0f);
        		gl.glVertex2d(_seg.get_dot().get_x(),_seg.get_dot().get_y());
        		gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
+      
        gl.glEnd();
+       		
+       		if (_selec==3){
+       		
+       			double Cx=_seg.get_dot().get_x();
+       			double Cy=_seg.get_dot().get_y();
+       			double k=0; //incremento x
+       			double l=0; //incremento y
+       			while (Cx!=(_seg.get_dot().get_x())+k && Cy!=(_seg.get_dot().get_y())+l){
+       			
+       				PV2D cent= new PV2D(Cx,Cy,false); //el centro irá variando, animator?
+       				Poligono circle= new Poligono(cent,20,300);
+       				//Animator anim= new Animator(drawable);
+       				gl.glBegin(GL.GL_LINE_LOOP);
+       				//anim.start();
+       				for(int j=0;j<circle.getPoligonoSize();j++){
+       					gl.glVertex2d(circle.getdot(j).get_x(), circle.getdot(j).get_y());
+       					
+       				}
+       				
+       				k+=(_seg.get_dot().get_x()+_seg.get_vector().get_x())/50;
+       				l+=(_seg.get_dot().get_y()+_seg.get_vector().get_y())/50;
+       			gl.glEnd();
+       			//anim.stop();
+       			}
+       		}
        }
        
        if(_polSelecionado!=-1 && _seg!=null){

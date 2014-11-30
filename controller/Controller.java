@@ -124,6 +124,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_C:		scene.seleccion(0);		 break; //centrar camara
 			case KeyEvent.VK_S:		scene.seleccion(1);		 break; //seleccion
 			case KeyEvent.VK_P:		scene.seleccion(2);		 break; //pintar segmento
+			case KeyEvent.VK_A:		scene.seleccion(3);		 break; //animar circulo
 			
 		  
 									
