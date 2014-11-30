@@ -16,6 +16,8 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 
+import com.jogamp.opengl.util.FPSAnimator;
+
 //AWT imports
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -29,6 +31,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 
 	private Scene scene; // The model which is controlled  
 	private GLAutoDrawable canvas; // The viewport that is used to render the model
+	private FPSAnimator _timer;
 	
 	private final GLU glu = new GLU(); //This object is kept for invoking gluOrtho2D in update_PROJECTION_MATRIX
 	//private boolean update_Proyection_Matrix=false;
@@ -42,7 +45,9 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		xLeft=0; xRight= (double)canvas.getWidth();
         yBottom=0;  yTop= (double)canvas.getHeight();
 		scene= new Scene(xLeft, xRight, yTop, yBottom); //Initialize the scene size with the viewport size 
-	    
+		_timer = new FPSAnimator(canvas,1);
+		_timer.start();
+		_timer.pause();
 		System.out.print("Scene bounds:\n");
 	    System.out.print("xLeft:  \t" + xLeft +   " xRight:\t" +  xRight + "\n");
 	    System.out.print("yBottom:\t" + yBottom + " yTop:  \t" +  yTop + "\n");
@@ -84,11 +89,10 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		System.out.print("Into display\n");
 		GL2 gl = drawable.getGL().getGL2();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-       
-        /*if (baldosas) scene.embaldosar(numCol);
-        else scene.draw(drawable);
-        */
-        scene.draw(drawable);
+        
+        if(!_timer.isPaused()) 
+        	scene.step(); 					 //Actualizar la escena
+        scene.draw(drawable);				 //Visualizar la escena
 	}
 	
 	
@@ -121,25 +125,18 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_DOWN:  scene.moveScene(0,-10);  break;
 			case KeyEvent.VK_PLUS:  scene.zoomScene(0.9);    break;
 			case KeyEvent.VK_MINUS: scene.zoomScene(1.1);    break;
-			case KeyEvent.VK_C:		scene.seleccion(0);		 break; //centrar camara
-			case KeyEvent.VK_S:		scene.seleccion(1);		 break; //seleccion
-			case KeyEvent.VK_P:		scene.seleccion(2);		 break; //pintar segmento
-			case KeyEvent.VK_A:		scene.seleccion(3);		 break; //animar circulo
-			
-		  
-									
+			case KeyEvent.VK_C:		scene.opcion(0);		 break; //centrar camara
+			case KeyEvent.VK_S:		scene.opcion(1);		 break; //seleccion
+			case KeyEvent.VK_P:		scene.opcion(2);		 break; //pintar segmento			
+			case KeyEvent.VK_A:		if(_timer.isPaused()){
 										
-//down scene.zoom(0,9); update_projection_matrix= true; break;
-//up scene.zoom (1,1); 
-			 
-		}
+										_timer.resume();
+									}else 
+										_timer.pause();		 break;	//animar/parar la animacion
+									
+			}
 		  
-		GLContext context=canvas.getGL().getGL2().getContext();
-		  if (!context.isCurrent()) context.makeCurrent();
-		  update_PROJECTION_MATRIX(canvas);
-		context.release();
-		  
-		canvas.display();
+		postEventos();
 		
 	}
 
@@ -166,12 +163,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		
 		scene.mouseDot(posx, posy);
 		
-		GLContext context=canvas.getGL().getGL2().getContext();
-		  if (!context.isCurrent()) context.makeCurrent();
-		  update_PROJECTION_MATRIX(canvas);
-		context.release();
-		  
-		canvas.display();	
+		postEventos();
 		
 		
 	}
@@ -208,12 +200,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		
 		scene.moveScene(xShift,yShift);
 		
-		GLContext context=canvas.getGL().getGL2().getContext();
-		  if (!context.isCurrent()) context.makeCurrent();
-		  update_PROJECTION_MATRIX(canvas);
-		context.release();
-		  
-		canvas.display();
+		postEventos();
 	}
 	
 	
@@ -230,6 +217,29 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
         gl.glLoadIdentity();
 		glu.gluOrtho2D(xLeft, xRight, yBottom, yTop);
+	}
+	
+	
+	
+	/**
+	 *   metodo auxiliar que se ejecuta despues
+	 * de cada evento para actualizar la escena
+	 */
+	private void postEventos(){
+		
+		//no tocar este trozo de codigo(no se lo que hace pero nos lo dio el profe)
+		GLContext context=canvas.getGL().getGL2().getContext();
+		  if (!context.isCurrent()) context.makeCurrent();
+		  update_PROJECTION_MATRIX(canvas);
+		context.release();		  
+		
+		//escribir codigo por debajo de este comentario
+		
+		
+		
+		
+		// no tocar esta ultima linea
+		canvas.display();
 	}
 
 	

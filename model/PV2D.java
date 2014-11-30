@@ -69,5 +69,10 @@ public class PV2D {
 		_y = _y/(Math.hypot(_x,_y));
 		_x=aux_x;
 	}
+	
+	public void setCordenados(double x,double y){
+		this._x=x;
+		this._y=y;
+	}
 
 }

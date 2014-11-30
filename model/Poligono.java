@@ -137,7 +137,12 @@ public class Poligono {
 	
 	
 	
-	
+	/**
+	 * metodo para encontrar los puntos de corte entre un poligono y un segmento
+	 * @param seg - el segmento en el que comprobamos el corte
+	 * @param tparams - los puntos de corte en caso de haberlos
+	 * @return - true si hay corte y los puntos en tparams, false en caso de no haber corte, los tparams pueden haber cambiado igualmente
+	 */
 	public boolean cyrusBeck(Segmento seg, Params tparams){
 		int i= 0; 
 		boolean encontrado= false;

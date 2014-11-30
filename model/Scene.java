@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
-
 import com.jogamp.opengl.util.Animator;
+import com.jogamp.opengl.util.FPSAnimator;
 
 public class Scene {
 
@@ -23,20 +23,19 @@ public class Scene {
 	private double xLeft, xRight, yTop, yBottom; // SVA position
 	
 	// Scene variables
-	private double xTriangle, yTriangle;
-	private double triangleWidth, triangleHeight;
-	private boolean redColor;
-	private double Mx,My;
-	private double windowX, windowY ;
-	private double xCenter,yCenter;
-	private ArrayList<Poligono> _poligono;
-	private Segmento _seg;
-	private PV2D _dSeg;
-	private PV2D _vSeg;
-	private boolean _flip;
-	private int _selec;
-	private int _polSelecionado;//indica la posiccion del poligono selecionado en el array de poligonos, -1 en caso de no haber ninguno selecionado
-	
+	private double xTriangle, yTriangle;			// posiciones de ejemplo
+	private double triangleWidth, triangleHeight;	//ancho y largo de ejenplo
+	private double windowX, windowY ;				//ancho y largo actual de la ventana
+	private double xCenter,yCenter;					//centro actual de la escena
+	private ArrayList<Poligono> _poligono;			//la lista de poligones
+	private Segmento _seg;							//el segmento que maneja el usuario
+	private PV2D _dSeg;								//el punto del segmento, usado meramente para memoria
+//	private boolean _flip;							//booleano para indicar si ya hay un punto
+	private int _option;							//la opccion seleccionada para el funcionamiento del clik 
+	private int _polSelecionado;					//indica la posiccion del poligono selecionado en el array de poligonos,
+													//-1 en caso de no haber ninguno selecionado
+	private PV2D _CenCirculo;						//el centro del circulo que vamos a animar
+	private Poligono _Circulo;						//el circulo que vamos a animar
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
@@ -51,16 +50,13 @@ public class Scene {
 		xCenter=(xRight-xLeft)/2;
 		yCenter=(yTop-yBottom)/2;
 		
-		//mouse coordinates
-		Mx=xCenter;
-		My=yCenter;
-		
+	
 		//window size
 		windowX= xRight-xLeft;
 		windowY= yTop-yBottom;
 		
-		_flip=true;
-		_selec=0;
+		//_flip=true;
+		_option=0;
 		_polSelecionado = -1;
 		
 		_poligono=new ArrayList<Poligono>();
@@ -73,7 +69,7 @@ public class Scene {
 		PV2D p1= new PV2D(xTriangle,yTriangle,false);
 		PV2D p2= new PV2D(xCenter,yCenter,false);
 		PV2D p3= new PV2D(xCenter-(windowX/4),yCenter+(windowY/4),false);
-		redColor= true;
+
 		
 		
         Poligono pol1= new Poligono(p1,100,6);
@@ -135,68 +131,57 @@ public class Scene {
 		GL2 gl = drawable.getGL().getGL2();
          
 
-       for(int i=0;i<_poligono.size();i++){
-    	   if(i!=_polSelecionado) gl.glColor3f(1.0f, 0.0f , 0.0f);
-           else gl.glColor3f(0.0f,0.0f,1.0f); 
+		for(int i=0;i<_poligono.size();i++){
+			if(i!=_polSelecionado) gl.glColor3f(1.0f, 0.0f , 0.0f);
+			else gl.glColor3f(0.0f,0.0f,1.0f); 
         	gl.glBegin(GL.GL_LINE_LOOP);
 		    	//gl.glVertex2d(_poligono.get(i).getdot1(0).get_x(), _poligono.get(i).getdot1(0).get_y());
 		    	for(int j=0;j<_poligono.get(i).getPoligonoSize();j++){
 		    		gl.glVertex2d(_poligono.get(i).getdot(j).get_x(), _poligono.get(i).getdot(j).get_y());
 		    	}
-        	
-       
 		    gl.glEnd();
-        }
-       if(_seg!=null){
-       gl.glBegin(GL.GL_LINE_STRIP);
-       		gl.glColor3f(0.0f,1.0f,0.0f);
-       		gl.glVertex2d(_seg.get_dot().get_x(),_seg.get_dot().get_y());
-       		gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
+		}
+		
+		if(_seg!=null){
+			//pintado del segmento
+			gl.glBegin(GL.GL_LINE_STRIP);
+       			gl.glColor3f(0.0f,1.0f,0.0f);
+       			gl.glVertex2d(_seg.get_dot().get_x(),_seg.get_dot().get_y());
+       			gl.glVertex2d(_seg.get_vector().get_x()+_seg.get_dot().get_x(),_seg.get_vector().get_y()+_seg.get_dot().get_y());
       
-       gl.glEnd();
+       		gl.glEnd();
        		
-       		if (_selec==3){
+       		//pintado de los puntos de corte
+       		if(_polSelecionado!=-1){
+         	   Params tParams = new Params(0,1);
+         	   for (int i = 0;i<this._poligono.size();i++){
+         		   if(this._polSelecionado==i && _poligono.get(i).cyrusBeck(_seg, tParams)){
+         			   gl.glBegin(GL.GL_POINTS);
+         			   		gl.glColor3f(1.0f,0.0f,1.0f);
+         			   		if(tParams.getin()>0)
+         			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getin()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getin()));
+         			   		if(tParams.getout()<1)
+         			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getout()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getout()));
+         			   gl.glEnd();
+         		   }
+         	   }
+            }
        		
-       			double Cx=_seg.get_dot().get_x();
-       			double Cy=_seg.get_dot().get_y();
-       			double k=0; //incremento x
-       			double l=0; //incremento y
-       			while (Cx!=(_seg.get_dot().get_x())+k && Cy!=(_seg.get_dot().get_y())+l){
-       			
-       				PV2D cent= new PV2D(Cx,Cy,false); //el centro irá variando, animator?
-       				Poligono circle= new Poligono(cent,20,300);
-       				//Animator anim= new Animator(drawable);
-       				gl.glBegin(GL.GL_LINE_LOOP);
-       				//anim.start();
-       				for(int j=0;j<circle.getPoligonoSize();j++){
-       					gl.glVertex2d(circle.getdot(j).get_x(), circle.getdot(j).get_y());
-       					
+       		//pintado de la circunferencia
+       		if(_Circulo!=null){
+       			gl.glBegin(GL.GL_LINE_LOOP);
+       				for(int i = 0;i<_Circulo.getPoligonoSize();i++){       				
+       					gl.glVertex2d(_Circulo.getdot(i).get_x(), _Circulo.getdot(i).get_y());       				
        				}
-       				
-       				k+=(_seg.get_dot().get_x()+_seg.get_vector().get_x())/50;
-       				l+=(_seg.get_dot().get_y()+_seg.get_vector().get_y())/50;
        			gl.glEnd();
-       			//anim.stop();
-       			}
        		}
+       		
+       		
        }
        
-       if(_polSelecionado!=-1 && _seg!=null){
-    	   for (int i = 0;i<this._poligono.size();i++){
-    		  
-    		   Params tParams = new Params(0,1);
-    		   
-    		   if(_poligono.get(i).cyrusBeck(_seg, tParams) && this._polSelecionado==i){
-    			   gl.glBegin(GL.GL_POINTS);
-    			   		gl.glColor3f(1.0f,0.0f,1.0f);
-    			   		if(tParams.getin()>0)
-    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getin()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getin()));
-    			   		if(tParams.getout()<1)
-    			   			gl.glVertex2d(_seg.get_dot().get_x()+(_seg.get_vector().get_x()*tParams.getout()),_seg.get_dot().get_y()+(_seg.get_vector().get_y()*tParams.getout()));
-    			   gl.glEnd();
-    		   }
-    	   }
-       }
+       
+       
+       
         /*gl.glBegin(GL.GL_POINTS);
     		gl.glVertex2d(Mx,My);
     	gl.glEnd();
@@ -246,12 +231,12 @@ public class Scene {
 	 */
 	public void mouseDot(double mouseX, double mouseY){
 	
-		Mx=xLeft+mouseX*getWidth()/windowX;
-		My=yTop-mouseY*getHeight()/windowY;
-		if (_selec==0){ // centrar
+		double Mx=xLeft+mouseX*getWidth()/windowX;
+		double My=yTop-mouseY*getHeight()/windowY;
+		if (_option==0){ // centrar
 			centerView(Mx,My);
 		}
-		else if(_selec==1){ //seleccionar
+		else if(_option==1){ //seleccionar
 			int i = 0;
 			_polSelecionado = -1;
 			while(i<_poligono.size() && _polSelecionado==-1){
@@ -262,16 +247,19 @@ public class Scene {
 				i++;
 			}
 		}
-		else if (_selec==2){ // pintar segmento
+		else if (_option==2){ // pintar segmento
 			
-			if(_flip){
+			if(_dSeg==null){
 				_dSeg=new PV2D(Mx,My,false);
-				_flip=false;
+				//_flip=false;
 			}else{
 				
-				_vSeg=new PV2D(Mx-_dSeg.get_x(),My-_dSeg.get_y(),true);
-				_seg = new Segmento(_dSeg,_vSeg);
-				_flip=true;
+				PV2D vSeg=new PV2D(Mx-_dSeg.get_x(),My-_dSeg.get_y(),true);
+				_seg = new Segmento(_dSeg,vSeg);
+				_CenCirculo = new PV2D(_dSeg.get_x(),_dSeg.get_y(),false);				
+				_dSeg=null;
+				
+				//_flip=true;
 			}
 			
 		}
@@ -293,24 +281,35 @@ public class Scene {
 		yBottom= yCenter - b;
 		
 		
-		//double xShift=(getWidth()/2)-X;
-		//double yShift=(getHeight()/2)-Y;
-		//xCenter=X;
-		//yCenter=Y;
-		//moveScene(xShift,yShift);
-		//yBottom= yBottom-getHeight()+Y;
-		
-		
 	}
 	
 	
-	/////////////////////////////////
-	public void changeColor(){
-		redColor = !redColor;
+
+
+	/**
+	 * cambia la accion actual de clic izquierdo
+	 * 		*0-centrar
+	 * 		*1-seleccionar
+	 * 		*2-pintar
+	 * 		*3-animar
+	 * @param sel - la nueva selecion
+	 */
+	public void opcion(int sel) {
+		_option=sel;
+		
 	}
 
-	public void seleccion(int sel) {
-		_selec=sel;
+	/**
+	 * cambia la escenaen un paso de animacion
+	 * esto es mover el centro del circulo y dejar que el drawale lo pinte
+	 */
+	public void step() {
+		
+		if(_CenCirculo!=null){
+			_Circulo = new Poligono(_CenCirculo,30,300);
+			
+			_CenCirculo.setCordenados(_CenCirculo.get_x()+_seg.get_vector().get_x()/25, _CenCirculo.get_y()+_seg.get_vector().get_y()/25);
+		}
 		
 	}
 
