@@ -70,7 +70,7 @@ public class PV2D {
 		_x=aux_x;
 	}
 	
-	public void setCordenados(double x,double y){
+	public void setCordenadas(double x,double y){
 		this._x=x;
 		this._y=y;
 	}

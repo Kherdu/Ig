@@ -45,7 +45,7 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		xLeft=0; xRight= (double)canvas.getWidth();
         yBottom=0;  yTop= (double)canvas.getHeight();
 		scene= new Scene(xLeft, xRight, yTop, yBottom); //Initialize the scene size with the viewport size 
-		_timer = new FPSAnimator(canvas,1);
+		_timer = new FPSAnimator(canvas,10);
 		_timer.start();
 		_timer.pause();
 		System.out.print("Scene bounds:\n");
@@ -128,7 +128,8 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 			case KeyEvent.VK_C:		scene.opcion(0);		 break; //centrar camara
 			case KeyEvent.VK_S:		scene.opcion(1);		 break; //seleccion
 			case KeyEvent.VK_P:		scene.opcion(2);		 break; //pintar segmento			
-			case KeyEvent.VK_A:		if(_timer.isPaused()){
+			case KeyEvent.VK_A:		
+									if(_timer.isPaused()){
 										
 										_timer.resume();
 									}else 

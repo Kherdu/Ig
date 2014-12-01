@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+
 import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -168,6 +169,7 @@ public class Scene {
             }
        		
        		//pintado de la circunferencia
+       		
        		if(_Circulo!=null){
        			gl.glBegin(GL.GL_LINE_LOOP);
        				for(int i = 0;i<_Circulo.getPoligonoSize();i++){       				
@@ -308,7 +310,10 @@ public class Scene {
 		if(_CenCirculo!=null){
 			_Circulo = new Poligono(_CenCirculo,30,300);
 			
-			_CenCirculo.setCordenados(_CenCirculo.get_x()+_seg.get_vector().get_x()/25, _CenCirculo.get_y()+_seg.get_vector().get_y()/25);
+			_CenCirculo.setCordenadas(_CenCirculo.get_x()+_seg.get_vector().get_x()/25, _CenCirculo.get_y()+_seg.get_vector().get_y()/25);
+			if (Math.abs(_CenCirculo.get_x())>Math.abs(_seg.get_dot().get_x()+_seg.get_vector().get_x())){
+				_CenCirculo.setCordenadas(_seg.get_dot().get_x(), _seg.get_dot().get_y());
+			}
 		}
 		
 	}
