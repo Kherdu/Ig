@@ -25,7 +25,7 @@ public class Scene {
 	
 	// Scene variables
 	private double xTriangle, yTriangle;			// posiciones de ejemplo
-	private double triangleWidth, triangleHeight;	//ancho y largo de ejenplo
+//	private double triangleWidth, triangleHeight;	//ancho y largo de ejenplo
 	private double windowX, windowY ;				//ancho y largo actual de la ventana
 	private double xCenter,yCenter;					//centro actual de la escena
 	private ArrayList<Poligono> _poligono;			//la lista de poligones
@@ -37,6 +37,7 @@ public class Scene {
 													//-1 en caso de no haber ninguno selecionado
 	private PV2D _CenCirculo;						//el centro del circulo que vamos a animar
 	private Poligono _Circulo;						//el circulo que vamos a animar
+	private int _contador;
 	
 	/////////////////////////////////
 	public Scene(double xLeft1, double xRight1, double yTop1, double yBottom1){
@@ -59,9 +60,9 @@ public class Scene {
 		//_flip=true;
 		_option=0;
 		_polSelecionado = -1;
-		
+		_contador=0;
 		_poligono=new ArrayList<Poligono>();
-		triangleWidth= 0.4*(xRight-xLeft);
+		double triangleWidth= 0.4*(xRight-xLeft);
 		xTriangle= xLeft + 0.3*(xRight-xLeft);
 		/*Dot p1 = new Dot(xTriangle,yTriangle);
         Dot p2 = new Dot(xTriangle + triangleWidth,yTriangle);
@@ -70,15 +71,18 @@ public class Scene {
 		PV2D p1= new PV2D(xTriangle,yTriangle,false);
 		PV2D p2= new PV2D(xCenter,yCenter,false);
 		PV2D p3= new PV2D(xCenter-(windowX/4),yCenter+(windowY/4),false);
+		PV2D p4= new PV2D(400,200,false);
 
 		
 		
         Poligono pol1= new Poligono(p1,100,6);
         Poligono pol2= new Poligono(p2,65,3);
         Poligono pol3= new Poligono(p3,50,4);
+        Poligono pol4= new Poligono(p4,70,9);
         _poligono.add(pol1);
         _poligono.add(pol2);
         _poligono.add(pol3);
+        _poligono.add(pol4);
 		
 	     
 	}
@@ -172,6 +176,7 @@ public class Scene {
        		
        		if(_Circulo!=null){
        			gl.glBegin(GL.GL_LINE_LOOP);
+       				gl.glColor3f(0.341f, 0.556f, 0.121f);
        				for(int i = 0;i<_Circulo.getPoligonoSize();i++){       				
        					gl.glVertex2d(_Circulo.getdot(i).get_x(), _Circulo.getdot(i).get_y());       				
        				}
@@ -244,6 +249,12 @@ public class Scene {
 			while(i<_poligono.size() && _polSelecionado==-1){
 				if(_poligono.get(i).puntointerno(Mx,My)){
 					_polSelecionado=i;
+					 Params tParams = new Params(0,1);
+					if((_seg!=null) && _poligono.get(i).cyrusBeck(_seg, tParams)){
+						PV2D dot = new PV2D((tParams.getin()*_seg.get_vector().get_x())+_seg.get_dot().get_x(),(tParams.getin()*_seg.get_vector().get_y())+_seg.get_dot().get_y(),false);
+						PV2D vector = new PV2D((tParams.getout()*_seg.get_vector().get_x()),(tParams.getout()*_seg.get_vector().get_y()),true);
+						_seg = new Segmento(dot,vector);
+					}
 				}
 				
 				i++;
@@ -258,8 +269,16 @@ public class Scene {
 				
 				PV2D vSeg=new PV2D(Mx-_dSeg.get_x(),My-_dSeg.get_y(),true);
 				_seg = new Segmento(_dSeg,vSeg);
-				_CenCirculo = new PV2D(_dSeg.get_x(),_dSeg.get_y(),false);				
+				_Circulo=null;
+				_CenCirculo = new PV2D(_dSeg.get_x(),_dSeg.get_y(),false);
+				_contador=0;
 				_dSeg=null;
+				Params tParams = new Params(0,1);
+				if((_polSelecionado!=-1) && _poligono.get(_polSelecionado).cyrusBeck(_seg, tParams)){
+					PV2D dot = new PV2D((tParams.getin()*_seg.get_vector().get_x())+_seg.get_dot().get_x(),(tParams.getin()*_seg.get_vector().get_y())+_seg.get_dot().get_y(),false);
+					PV2D vector = new PV2D((tParams.getout()*_seg.get_vector().get_x()),(tParams.getout()*_seg.get_vector().get_y()),true);
+					_seg = new Segmento(dot,vector);
+				}
 				
 				//_flip=true;
 			}
@@ -311,8 +330,10 @@ public class Scene {
 			_Circulo = new Poligono(_CenCirculo,30,300);
 			
 			_CenCirculo.setCordenadas(_CenCirculo.get_x()+_seg.get_vector().get_x()/25, _CenCirculo.get_y()+_seg.get_vector().get_y()/25);
-			if (Math.abs(_CenCirculo.get_x())>Math.abs(_seg.get_dot().get_x()+_seg.get_vector().get_x())){
+			_contador++;
+			if (_contador>25){
 				_CenCirculo.setCordenadas(_seg.get_dot().get_x(), _seg.get_dot().get_y());
+				_contador=0;
 			}
 		}
 		
