@@ -1,5 +1,5 @@
 //////////////////////////////////////////// 
-// Project skeleton for Computer 2D Graphics
+// Project skeleton for Computer 3D Graphics
 // MVC-based design
 // Author: Chus Martín
 // 2014
@@ -10,48 +10,67 @@ package controller;
 //JOGL imports
 import javax.media.opengl.GL;
 import javax.media.opengl.GLAutoDrawable;
-import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GL2;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
-
-import com.jogamp.opengl.util.FPSAnimator;
+//import com.jogamp.opengl.util.gl2.GLUT;
 
 //AWT imports
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+
+
 
 //Specific imports
 import model.Scene;
+import model.Camera;
 
-public class Controller implements GLEventListener, KeyListener, MouseListener{
+public class Controller implements GLEventListener, KeyListener{
 
-	private Scene scene; // The model which is controlled  
+	private Scene scene;   // The model which is controlled 
+	private Camera camera; // The viewer
+	
 	private GLAutoDrawable canvas; // The viewport that is used to render the model
-	private FPSAnimator _timer;
-	
-	private final GLU glu = new GLU(); //This object is kept for invoking gluOrtho2D in update_PROJECTION_MATRIX
-	//private boolean update_Proyection_Matrix=false;
 	
 	
+	private final GLU  glu = new GLU();  //This object is kept for invoking glu  commands
+	//private final GLUT glut= new GLUT(); //This object is kept for invoking glut commands
+	
+	
+	/////////////////////////////////
 	public Controller(GLAutoDrawable canvas1){
 		System.out.print("Into Controller's constructor\n\n");
 		
-		canvas= canvas1;		      
-		double xLeft, xRight, yTop, yBottom;
-		xLeft=0; xRight= (double)canvas.getWidth();
-        yBottom=0;  yTop= (double)canvas.getHeight();
-		scene= new Scene(xLeft, xRight, yTop, yBottom); //Initialize the scene size with the viewport size 
-		_timer = new FPSAnimator(canvas,10);
-		_timer.start();
-		_timer.pause();
-		System.out.print("Scene bounds:\n");
-	    System.out.print("xLeft:  \t" + xLeft +   " xRight:\t" +  xRight + "\n");
-	    System.out.print("yBottom:\t" + yBottom + " yTop:  \t" +  yTop + "\n");
-	    System.out.print("\n");
+		canvas= canvas1;
+				
+		//Frustum parameters 
+		float frustumWidth= (float)canvas.getWidth();
+		float frustumHeight= (float)canvas.getHeight();	
+		float xRight= frustumWidth/2.0f; 
+		float xLeft= -xRight;
+		float yTop= frustumHeight/2.0f; 
+		float yBottom= -yTop;
+		float near= 1;
+		float far= 1000;
+        
+        //View parameters
+        float[] eye=  {200.0f, 200.0f, 200.0f};
+        float[] look= {0.0f, 0.0f, 0.0f};
+        float[] up=   {0, 1, 0};
+        
+        //Camera construction
+        camera= new Camera(eye, look, up,
+  		                   xLeft, xRight, yTop, yBottom, near, far);
+       
+        //Scene construction 
+		scene= new Scene(xLeft, xRight, yTop, yBottom, near, far); //Initialize the scene size with the frustum size 	    
+		
+		System.out.println("Scene bounds:");
+	    System.out.println("xLeft:  \t" + xLeft +   " xRight:\t" +  xRight);
+	    System.out.println("yBottom:\t" + yBottom + " yTop:  \t" +  yTop);
+	    System.out.println("near:\t" + near + " far:  \t" +  far);
+	    System.out.println();
 
     }
 	
@@ -64,16 +83,41 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 		
 		GL2 gl = drawable.getGL().getGL2();
 
-		gl.glClearColor(1, 1, 1, 1);
-		gl.glColor3f(0.0f,0.0f,1.0f); 
+		//Background color
+		gl.glClearColor(0, 0, 0, 1);
+		//gl.glClearColor(0.6f,0.7f,0.8f,1.0f);
 
+		
+		//Thickness
 		gl.glPointSize(4.0f);
 		gl.glLineWidth(2.0f);
-
-		update_PROJECTION_MATRIX(drawable);
 		
-		gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-		gl.glLoadIdentity();
+		//Lighting
+		gl.glEnable(GL2.GL_LIGHTING);
+		gl.glEnable(GL2.GL_LIGHT0);
+	    float[] d={1.0f,1.0f,1.0f,1.0f};
+	    gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_DIFFUSE, d, 0);
+	    float[] a={0.3f,0.3f,0.3f,1.0f};
+	    gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_AMBIENT, a, 0);
+		float[] p={800.0f, 800.0f, 800.0f, 0};	 
+		gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, p, 0);
+
+		//Materials
+		gl.glEnable(GL2.GL_COLOR_MATERIAL);
+		gl.glMaterialf(GL2.GL_FRONT, GL2.GL_SHININESS, 0.1f);
+		
+		//Other 3D parameters
+		gl.glEnable(GL2.GL_DEPTH_TEST);
+		//gl.glEnable(GL2.GL_NORMALIZE); //Default setting!
+		//gl.glShadeModel(GL2.GL_SMOOTH); //Default setting!
+		//gl.glLightModeli(GL2.GL_LIGHT_MODEL_TWO_SIDE, GL2.GL_TRUE); //This is not the default setting!
+
+
+        //Projection matrix setting
+		camera.setProjection(drawable);
+				 		
+		//Modelview matrix setting
+		camera.setView(drawable, glu);
 	}
 
 	@Override
@@ -84,31 +128,30 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		
-		
 		System.out.print("Into display\n");
+		
 		GL2 gl = drawable.getGL().getGL2();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         
-        if(!_timer.isPaused()) 
-        	scene.step(); 					 //Actualizar la escena
-        scene.draw(drawable);				 //Visualizar la escena
+        //Axis rendering
+        drawAxis(drawable);
+        
+        //Teapot
+        //gl.glColor3f(1,0.8f,0);
+        //glut.glutSolidTeapot(100,true);
+        
+		//Scene rendering
+		scene.draw(drawable);					
+
 	}
-	
-	
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-		
-		double viewPortRatio= (double)width/(double)height;		
-		
-		
-		scene.windowSize(height, width);
-		scene.resize(viewPortRatio);
-		
-		update_PROJECTION_MATRIX(drawable);
-		
-		
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
+			int height) {
+
+		float viewPortRatio= (float)width/(float)height;	
+		camera.reshape(viewPortRatio);
+		camera.setProjection(drawable);	
 	}
 		
 
@@ -117,28 +160,15 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	@Override
 	public void keyPressed(KeyEvent e) {
 		switch(e.getKeyCode()){
+			case KeyEvent.VK_RIGHT:  scene.movePrism(2,0,0); break;
+			case KeyEvent.VK_LEFT:   scene.movePrism(-2,0,0); break;
+			case KeyEvent.VK_UP:     scene.movePrism(0,2,0); break;
+			case KeyEvent.VK_DOWN:   scene.movePrism(0,-2,0); break;
+			case KeyEvent.VK_PLUS:   scene.movePrism(0,0,2); break;
+			case KeyEvent.VK_MINUS:  scene.movePrism(0,0,-2); break;
+		}
 		
-		//modificar para mover escena en vez de figura
-			case KeyEvent.VK_RIGHT: scene.moveScene(10,0);   break;
-			case KeyEvent.VK_LEFT:  scene.moveScene(-10,0);  break;
-			case KeyEvent.VK_UP:    scene.moveScene(0,10);   break;
-			case KeyEvent.VK_DOWN:  scene.moveScene(0,-10);  break;
-			case KeyEvent.VK_PLUS:  scene.zoomScene(0.9);    break;
-			case KeyEvent.VK_MINUS: scene.zoomScene(1.1);    break;
-			case KeyEvent.VK_C:		scene.opcion(0);		 break; //centrar camara
-			case KeyEvent.VK_S:		scene.opcion(1);		 break; //seleccion
-			case KeyEvent.VK_P:		scene.opcion(2);		 break; //pintar segmento			
-			case KeyEvent.VK_A:		
-									if(_timer.isPaused()){
-										
-										_timer.resume();
-									}else 
-										_timer.pause();		 break;	//animar/parar la animacion
-									
-			}
-		  
-		postEventos();
-		
+		canvas.display();
 	}
 
 	@Override
@@ -151,97 +181,27 @@ public class Controller implements GLEventListener, KeyListener, MouseListener{
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
+	}	
 	
-
 	/////////////////////////////////
-	// MouseListener implementation
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		
-		double posx=e.getX();
-		double posy=e.getY();
-		
-		scene.mouseDot(posx, posy);
-		
-		postEventos();
-		
-		
-	}
+	//Specific methods	
+    //Axis rendering
+    private void drawAxis(GLAutoDrawable drawable){
+    	GL2 gl = drawable.getGL().getGL2();    
+	    gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);  
+    	gl.glBegin(GL.GL_LINES);
+    		gl.glColor3f(1,  0,  0);
+    		gl.glVertex3f(0, 0, 0);
+    		gl.glVertex3f(300, 0, 0); 
+    	
+    		gl.glColor3f(0,  1,  0);
+    		gl.glVertex3f(0, 0, 0);
+    		gl.glVertex3f(0, 300, 0);
+	    	
+    		gl.glColor3f(0,  0,  1);
+    		gl.glVertex3f(0, 0, 0);
+    		gl.glVertex3f(0, 0, 300);
+    	gl.glEnd();
+    }
 
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	
-	//////////////////////////////////
-	// Specific methods for this class
-	public void move(double xShift,double yShift){
-		
-		
-		scene.moveScene(xShift,yShift);
-		
-		postEventos();
-	}
-	
-	
-	
-	
-	
-	private void update_PROJECTION_MATRIX(GLAutoDrawable drawable) {
-		double xLeft= scene.getXLeft();
-		double xRight= scene.getXRight();
-		double yBottom= scene.getYBottom();
-		double yTop= scene.getYTop();
-				
-		GL2 gl = drawable.getGL().getGL2();
-		gl.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-        gl.glLoadIdentity();
-		glu.gluOrtho2D(xLeft, xRight, yBottom, yTop);
-	}
-	
-	
-	
-	/**
-	 *   metodo auxiliar que se ejecuta despues
-	 * de cada evento para actualizar la escena
-	 */
-	private void postEventos(){
-		
-		//no tocar este trozo de codigo(no se lo que hace pero nos lo dio el profe)
-		GLContext context=canvas.getGL().getGL2().getContext();
-		  if (!context.isCurrent()) context.makeCurrent();
-		  update_PROJECTION_MATRIX(canvas);
-		context.release();		  
-		
-		//escribir codigo por debajo de este comentario
-		
-		
-		
-		
-		// no tocar esta ultima linea
-		canvas.display();
-	}
-
-	
 }
